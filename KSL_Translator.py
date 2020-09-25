@@ -17,6 +17,7 @@ CNN : 지화 동작 분류
 '''
 
 import cv2
+from PIL import ImageFont, ImageDraw, Image
 import numpy as np
 import time
 import os
@@ -61,7 +62,7 @@ weightsFile = os.getcwd()+"\\pose_iter_102000.caffemodel" # 가중치
 caffe_net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
 # CNN 라벨 호출
-cnn_labels = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14'] + ['del','nothing','space']
+cnn_labels = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'] + ['del','nothing','space']
 cnn_classes={}
 i=0
 for label in cnn_labels:
@@ -85,6 +86,7 @@ success = vout.open('output.mp4', fourcc, 10, size, True)
 
 # 화면 폰트
 font = cv2.FONT_HERSHEY_PLAIN
+fonts = ImageFont.truetype(os.getcwd()+"\\fonts\\KoPubDotumMedium.ttf", 32)
 
 # FPS 측정 변수
 starting_time = time.time()
@@ -192,9 +194,15 @@ while True:
                 # 검은색 배경 이미지에 드로잉된 관절을 지화 CNN 모델에 넣어 예측
                 img_skeleton = img_skeleton.reshape((1, 256, 256, 3))
                 prediction = model.predict_classes(img_skeleton)[0]
-
-                # 화면에 분류 결과 텍스트로 띄우기
-                cv2.putText(frame, cnn_classes[prediction], (50, 400), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 7)
+                
+                # 화면에 분류 결과 텍스트로 띄우기(한글처리)
+                frame_pillow = Image.fromarray(frame)
+                putTxt = ImageDraw.Draw(frame_pillow)
+                putTxt.text((50, 400), cnn_classes[prediction], font=fonts, fill=(0, 0, 255))
+                frame = np.array(frame_pillow)
+                
+                # 화면에 분류 결과 텍스트로 띄우기(영어만)
+                # cv2.putText(frame, cnn_classes[prediction], (50, 400), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 7)
 
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.8, 0.3)
     
