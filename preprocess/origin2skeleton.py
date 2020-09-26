@@ -18,8 +18,8 @@ POSE_PAIRS = [["Palm","TFirst"], ["TFirst","TSecond"], ["TSecond","TThird"], ["T
             ]
 
 # 각 파일 path
-protoFile = "pose_deploy.prototxt"
-weightsFile = "pose_iter_102000.caffemodel"
+protoFile = "OpenPose 프로토파일"
+weightsFile = "OpenPose 가중치"
 
 # 위의 path에 있는 network 불러오기
 net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
